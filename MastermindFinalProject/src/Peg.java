@@ -17,6 +17,7 @@ public class Peg extends JButton{
 	String Difficulty;
 	Color Purple = new Color(127, 0, 255);
 	Color DYellow = new Color(153, 153, 0);
+	Color DOrange = new Color(255, 178, 102);
 	boolean isCounted = false;
 	ActionListener Q = new ActionListener(){
 		/**
@@ -68,7 +69,7 @@ public class Peg extends JButton{
 		else if(A == "Orange")
 		{
 			AC = AvailColor.Orange;
-			this.setBackground(Color.ORANGE);
+			this.setBackground(DOrange);
 		}
 		else if(A == "Purple")
 		{
@@ -115,7 +116,7 @@ public class Peg extends JButton{
 		else if (AC == AvailColor.Green)
 		{
 			AC = AvailColor.Orange;
-			this.setBackground(Color.ORANGE);
+			this.setBackground(DOrange);
 		}
 		else if (AC == AvailColor.Orange)
 		{

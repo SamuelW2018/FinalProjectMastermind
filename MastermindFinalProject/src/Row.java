@@ -139,6 +139,7 @@ public class Row extends JPanel {
 						{
 							R.getPeg(k).SetCounted(true);
 							Information[1]++;
+							break;
 						}
 					}
 				}

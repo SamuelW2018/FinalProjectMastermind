@@ -40,7 +40,9 @@ public class GameDisplay extends JComponent implements ActionListener{
 		frame = new JFrame("Mastermind");
 		frame.setSize(600, 600);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.setLayout(new GridLayout(11, 2));
+		JPanel mainBox = new JPanel();
+		Box rowsBox = Box.createVerticalBox();
+		Box infoBox = Box.createVerticalBox();
 		
 		if(playerMode == JOptionPane.NO_OPTION) {
 			Object[] options2 = {"Easy", "Medium", "Impossible?"};
@@ -62,20 +64,12 @@ public class GameDisplay extends JComponent implements ActionListener{
 			for(int j = 0; j < 4; j++)
 			{
 				peginfo = j;
-				rows[i].getPeg(j).addActionListener(new ActionListener(){
-					/**
-					 * For every peg, clicking on them will change their color to the next in line.
-					 */
-					public void actionPerformed(ActionEvent e)
-					{
-						rows[rowinfo].getPeg(peginfo).changeColor();
-					}
-				});
+				rows[rowinfo].SetPegCommand(rowinfo);
 			}
 		}
 		if(PlayerDone == true)
 		{
-			frame.add(rows[0]);
+			rowsBox.add(rows[0]);
 		}
 		
 		JPanel p = new JPanel();
@@ -99,8 +93,9 @@ public class GameDisplay extends JComponent implements ActionListener{
 		}
 		else
 		{
+			JPanel solPanel = new JPanel();
 			solution = new Row("Medium");
-			frame.add(solution);
+			rowsBox.add(solution);
 			JButton submitSolution = new JButton("Submit Solution");
 			submitSolution.addActionListener(new ActionListener() {
 				/**
@@ -109,16 +104,23 @@ public class GameDisplay extends JComponent implements ActionListener{
 				 */
 				public void actionPerformed(ActionEvent E)
 				{
-					frame.remove(solution);
-					frame.remove(submitSolution);
-					frame.add(rows[0]);
+					rowsBox.remove(solPanel);
+					frame.remove(mainBox);
+					rowsBox.remove(solution);
+					rowsBox.remove(submitSolution);
+					rowsBox.add(rows[0]);
 					p.add(Sub);
-					frame.add(p);
+					mainBox.add(p);
+					mainBox.add(rowsBox);
+					mainBox.add(infoBox);
+					frame.add(mainBox);
 					PlayerDone = true;
 					frame.setVisible(true);
 				}
 			});
-			frame.add(submitSolution);
+			solPanel.add(submitSolution);
+			rowsBox.add(Box.createVerticalStrut(20));
+			rowsBox.add(solPanel);
 		}
 		
 		Sub.addActionListener(new ActionListener(){
@@ -137,10 +139,15 @@ public class GameDisplay extends JComponent implements ActionListener{
 				{
 					if(turns <= 9)
 					{
-						frame.remove(p);
+						frame.remove(mainBox);
+						mainBox.remove(infoBox);
+						mainBox.remove(rowsBox);
+						mainBox.remove(p);
 						data = rows[turns].compareRows(solution);
 						String InfoString = "Correct: " + data[0] +", Missplaced: " + data[1] + ", Wrong: " + data[2];
-						frame.add(new JLabel(InfoString));
+						infoBox.add(new JLabel(InfoString));
+						infoBox.add(Box.createVerticalStrut(39));
+						mainBox.add(infoBox);
 					}
 					if(data[0] == 4)
 					{
@@ -157,10 +164,12 @@ public class GameDisplay extends JComponent implements ActionListener{
 					turns++;
 					if(turns < 10 && GameOver == false)
 					{
-						frame.add(rows[turns]);
+						rowsBox.add(Box.createVerticalStrut(35));
+						rowsBox.add(rows[turns]);
 					}
 					else if(turns >= 10 && GameOver == false)
 					{
+						rowsBox.add(Box.createVerticalStrut(35));
 						String loseString;
 						if(Multiplayer == true)
 						{
@@ -181,14 +190,20 @@ public class GameDisplay extends JComponent implements ActionListener{
 					{
 						rows[turns-1].getPeg(i).removeActionListener(rows[turns-1].getPeg(i).getActionListener());
 					}
-					frame.add(p);
+					mainBox.add(p);
+					mainBox.add(rowsBox);
+					mainBox.add(infoBox);
+					frame.add(mainBox);
 					
 					frame.setVisible(true);
 					
 				}
 			}
 		});
-		frame.add(p);
+		mainBox.add(p);
+		mainBox.add(rowsBox);
+		mainBox.add(infoBox);
+		frame.add(mainBox);
 		frame.setVisible(true);
 			
 	}
@@ -205,7 +220,8 @@ public class GameDisplay extends JComponent implements ActionListener{
 	/**
 	 * This is the actionPerformed function of the gameDisplay interface. It checks to see if the
 	 * player has clicked any of the buttons. It will only change buttons on specific turns.
-	 * Due to changes in the gameDisplay function, this function is for testing purposes only.
+	 * This function used to be for testing purposes only, but in order to fix a bug with a particular box, this function was added back
+	 * This function ensures a unique action command for every button, provided the action command exists when the button is pressed.
 	 */
 	public void actionPerformed(ActionEvent e) {
 		String action = e.getActionCommand();
